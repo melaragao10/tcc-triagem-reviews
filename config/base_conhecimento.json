@@ -1,0 +1,42 @@
+{
+  "tecnico": {
+    "bug": 1,
+    "bugs": 1,
+    "erro": 1,
+    "travando": 2,
+    "travamento": 2,
+    "fecha sozinho": 3,
+    "fechando sozinho": 3,
+    "queda de fps": 3,
+    "fps baixo": 2,
+    "tela preta": 3,
+    "nao abre": 3,
+    "nao inicia": 3,
+    "erro no servidor": 3,
+    "servidor caiu": 3,
+    "lag": 2,
+    "atraso no controle": 3,
+    "controle nao responde": 3,
+    "textura quebrada": 2,
+    "audio falhando": 2,
+    "save corrompido": 3,
+    "carregamento infinito": 3
+  },
+  "afetivo_visual": {
+    "personagem feia": 3,
+    "protagonista feia": 3,
+    "rosto estranho": 2,
+    "rosto feio": 3,
+    "parece um homem": 3,
+    "mulher masculinizada": 3,
+    "personagem masculinizada": 3,
+    "nao e atraente": 2,
+    "nao eh atraente": 2,
+    "corpo feio": 3,
+    "sem feminilidade": 3,
+    "deveria ser mais bonita": 3,
+    "roupa feia": 2,
+    "design da personagem e feio": 3,
+    "aparencia horrivel": 3
+  }
+}
