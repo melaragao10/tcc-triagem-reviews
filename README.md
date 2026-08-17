@@ -30,7 +30,7 @@ projeto_reviews/
 - [x] Estrutura de pastas criada
 - [x] Repositório Git inicializado
 - [x] Dockerfile criado
-- [ ] Base de conhecimento inicial (v1.0)
+- [x] Base de conhecimento inicial (v1.0)
 - [ ] Coleta de reviews implementada
 - [ ] Classificador implementado
 - [ ] Classificação manual de amostra (gabarito)
