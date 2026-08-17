@@ -15,6 +15,10 @@ COPY requirements.txt .
 # --no-cache-dir evita guardar cache de instalacao, deixando a imagem menor
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Baixa o pacote de stemming em portugues (RSLP) durante o build,
+# para nao depender de internet toda vez que o container rodar
+RUN python -c "import nltk; nltk.download('rslp')"
+
 # Copia todo o resto do projeto para dentro do container
 COPY . .
 
