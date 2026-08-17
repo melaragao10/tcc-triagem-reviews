@@ -29,7 +29,7 @@ projeto_reviews/
 - [x] Docker instalado e testado
 - [x] Estrutura de pastas criada
 - [x] Repositório Git inicializado
-- [ ] Dockerfile criado
+- [x] Dockerfile criado
 - [ ] Base de conhecimento inicial (v1.0)
 - [ ] Coleta de reviews implementada
 - [ ] Classificador implementado
