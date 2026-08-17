@@ -1,0 +1,10 @@
+services:
+  classificador:
+    build: .
+    image: tcc-classificador:latest
+    container_name: tcc-classificador
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+      - ./reports:/app/reports
+    restart: "no"
