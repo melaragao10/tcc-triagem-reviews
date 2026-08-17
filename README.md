@@ -1,3 +1,4 @@
+cat > README.md << 'EOF'
 # Triagem de Reviews de Jogos Digitais com IA Simbólica
 
 TCC — Ciência da Computação — UDF — Melissa Aragão Leite
@@ -32,6 +33,8 @@ projeto_reviews/
 - [x] Dockerfile criado
 - [x] Base de conhecimento inicial (v1.0)
 - [x] Classificador implementado e testado (7 reviews de exemplo, via Docker/Portainer)
+- [x] Classificador com stemming (RSLP) implementado e testado
+- [ ] Dicionário de sinônimos curados (config/sinonimos.json)
 - [ ] Coleta de reviews reais (API Steam)
 - [ ] Classificação manual de amostra (gabarito)
 - [ ] Comparação automático x manual / ajuste de pesos
@@ -43,3 +46,10 @@ projeto_reviews/
   (transparência, auditabilidade, viabilidade em hardware sem GPU).
 - Escolhido Docker em vez de venv: garante reprodutibilidade do ambiente
   completo, não só das bibliotecas Python.
+- Adicionado stemming (RSLP/NLTK) como camada complementar à comparação
+  literal, para tratar variações morfológicas não cadastradas na base
+  de conhecimento: docs/decisao_stemming.md.
+- Corrigida dupla contagem de indicadores que reduzem ao mesmo radical
+  (bug identificado e corrigido na v1.2 do classificador):
+  docs/observacoes_teste_v1.md.
+EOF
