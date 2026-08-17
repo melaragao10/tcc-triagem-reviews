@@ -31,8 +31,8 @@ projeto_reviews/
 - [x] Repositório Git inicializado
 - [x] Dockerfile criado
 - [x] Base de conhecimento inicial (v1.0)
-- [ ] Coleta de reviews implementada
-- [ ] Classificador implementado
+- [x] Classificador implementado e testado (7 reviews de exemplo, via Docker/Portainer)
+- [ ] Coleta de reviews reais (API Steam)
 - [ ] Classificação manual de amostra (gabarito)
 - [ ] Comparação automático x manual / ajuste de pesos
 - [ ] Relatórios finais gerados
