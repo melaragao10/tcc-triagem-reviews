@@ -1,0 +1,7 @@
+# Cache Python
+__pycache__/
+*.pyc
+.env
+
+# Sistema
+.DS_Store
