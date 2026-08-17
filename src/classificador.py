@@ -4,10 +4,33 @@ escores, aplicacao de regras de decisao e calculo de confianca.
 
 Ver TCC - Capitulo 3.5 (Etapa 4: classificacao por IA simbolica)
 e Apendice A (pseudocodigo) para a fundamentacao teorica completa.
+
+v1.1: adiciona normalizacao morfologica (stemming RSLP) como camada
+complementar a comparacao literal, para tratar variacoes de conjugacao
+verbal e flexao de genero/numero nao previstas na base de conhecimento
+(ex: "servidor cai" vs "servidor caiu"). O stemming e uma tecnica
+simbolica/deterministica (reducao ao radical por regras linguisticas
+explicitas), nao envolve interpretacao semantica ou aprendizado
+estatistico, preservando a auditabilidade da classificacao (RNF3).
+
+v1.2: corrige dupla contagem de indicadores diferentes que reduzem
+ao mesmo radical (ex: "fecha sozinho" e "fechando sozinho"), que
+inflava o escore ao contar duas vezes a mesma variacao morfologica
+de um unico conceito. Ver docs/observacoes_teste_v1.md.
 """
 
 import re
 import unicodedata
+
+import nltk
+from nltk.stem import RSLPStemmer
+
+try:
+    nltk.data.find("stemmers/rslp")
+except LookupError:
+    nltk.download("rslp")
+
+_stemmer = RSLPStemmer()
 
 
 def remove_accents(value: str) -> str:
@@ -36,35 +59,67 @@ def normalize_text(value) -> str:
     return text.strip()
 
 
+def stem_phrase(phrase: str) -> str:
+    """
+    Aplica o stemmer RSLP a cada palavra de uma expressao normalizada,
+    reduzindo cada termo ao seu radical (ex: "caiu"/"cai"/"caindo" -> "ca").
+    """
+    return " ".join(_stemmer.stem(word) for word in phrase.split())
+
+
 def find_indicators(text: str, indicators: dict) -> tuple:
     """
-    Verifica quais indicadores de um grupo (tecnico ou afetivo_visual)
-    estao presentes no texto normalizado e soma os pesos correspondentes.
+    Verifica quais indicadores de um grupo estao presentes no texto,
+    em duas etapas:
 
-    Retorna: (escore_total, lista_de_indicadores_encontrados)
+    1) Comparacao literal (expressao exata, como no TCC original)
+    2) Comparacao por radical (stemming), aplicada apenas se a etapa 1
+       nao encontrar o indicador.
+
+    Indicadores diferentes que reduzem ao MESMO radical (ex: "fecha
+    sozinho" e "fechando sozinho") sao contados apenas UMA vez, para
+    evitar dupla contagem de variacoes morfologicas do mesmo conceito.
+
+    O metodo de casamento (literal ou via radical) fica registrado
+    para fins de auditoria.
     """
     score = 0
     found = []
+    stemmed_text = stem_phrase(text)
+    matched_stems = set()
 
     for indicator, weight in indicators.items():
         normalized_indicator = normalize_text(indicator)
-        # (?<![a-z0-9]) e (?![a-z0-9]) garantem que o indicador
-        # seja encontrado como palavra/expressao inteira, nao como
-        # parte de outra palavra (evita falso positivo)
-        pattern = (
+        stemmed_indicator = stem_phrase(normalized_indicator)
+
+        literal_pattern = (
             r"(?<![a-z0-9])" + re.escape(normalized_indicator) + r"(?![a-z0-9])"
         )
-        if re.search(pattern, text):
+        if re.search(literal_pattern, text):
             score += int(weight)
             found.append(indicator)
+            matched_stems.add(stemmed_indicator)
+            continue
+
+        if stemmed_indicator in matched_stems:
+            # Ja contabilizado por outro indicador com o mesmo radical
+            # nesta mesma chamada - evita dupla contagem.
+            continue
+
+        stem_pattern = (
+            r"(?<![a-z0-9])" + re.escape(stemmed_indicator) + r"(?![a-z0-9])"
+        )
+        if stemmed_indicator and re.search(stem_pattern, stemmed_text):
+            score += int(weight)
+            found.append(f"{indicator} (via radical)")
+            matched_stems.add(stemmed_indicator)
 
     return score, found
 
 
 def calculate_confidence(technical_score: int, affective_score: int) -> float:
     """
-    Calcula o nivel de confianca conforme formula 3.3 do TCC:
-    proporcao entre o maior escore e a soma dos escores.
+    Calcula o nivel de confianca conforme formula 3.3 do TCC.
     """
     total = technical_score + affective_score
     if total == 0:
@@ -75,7 +130,6 @@ def calculate_confidence(technical_score: int, affective_score: int) -> float:
 def apply_decision_rule(technical_score: int, affective_score: int) -> tuple:
     """
     Aplica a matriz de classificacao (Tabela 3 do TCC).
-    Retorna: (categoria, regra_acionada)
     """
     if technical_score > 0 and affective_score == 0:
         return "Tecnico", "R1"
@@ -88,9 +142,9 @@ def apply_decision_rule(technical_score: int, affective_score: int) -> tuple:
 
 def classify_review(original_text, knowledge_base: dict) -> dict:
     """
-    Funcao principal: recebe um comentario e a base de conhecimento,
-    retorna o resultado completo da classificacao com explicabilidade
-    (indicadores encontrados, regra acionada, nivel de confianca).
+    Funcao principal: classifica um comentario com base na base de
+    conhecimento, retornando escore, indicadores, categoria, regra
+    e nivel de confianca.
     """
     normalized_text = normalize_text(original_text)
 
