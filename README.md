@@ -1,7 +1,7 @@
 cat > README.md << 'EOF'
 # Triagem de Reviews de Jogos Digitais com IA Simbólica
 
-TCC — Ciência da Computação — UDF — Melissa Aragão Leite
+TCC — Ciência da Computação — UDF — Melissa Aragão Leite (2026_2)
 
 ## Objetivo
 Sistema especialista baseado em regras para classificar reviews de jogos
