@@ -1,9 +1,68 @@
 {
-  "_comentario": "Jogos candidatos da pesquisa. A escolha final e a justificativa ficam com a autora e a orientacao. appid = numero na URL da loja Steam.",
+  "_comentario": "Jogos da amostra principal (secao 2.4 do TCC). Criterios e fontes em docs/selecao_jogos.md. grupo nucleo = controversia sobre aparencia da personagem; grupo controle = ruido tecnico ou de outra natureza, usado para testar a separacao. appid = numero na URL da loja Steam. O campo periodo (DE ATE, AAAA-MM-DD) sera preenchido apos a checagem do volume.",
   "jogos": [
-    {"appid": 2651280, "jogo": "Marvel's Spider-Man 2", "motivo": "lancamento no PC com falhas tecnicas e criticas ao rosto da Mary Jane"},
-    {"appid": 2842040, "jogo": "Star Wars Outlaws", "motivo": "criticas a aparencia da protagonista Kay Vess"},
-    {"appid": 1845910, "jogo": "Dragon Age: The Veilguard", "motivo": "polemica de representacao (mais sobre identidade de genero)"},
-    {"appid": 2420110, "jogo": "Horizon Forbidden West", "motivo": "polemica da aparencia da Aloy (2021, antes da versao de PC)"}
+    {
+      "appid": 1151640,
+      "jogo": "Horizon Zero Dawn Complete Edition",
+      "personagem": "Aloy",
+      "grupo": "nucleo",
+      "motivo": "protagonista feminina; aparencia de Aloy alvo de criticas de parte do publico"
+    },
+    {
+      "appid": 2420110,
+      "jogo": "Horizon Forbidden West Complete Edition",
+      "personagem": "Aloy",
+      "grupo": "nucleo",
+      "motivo": "'peach fuzz' chamado de 'barba' e Aloy 'masculinizada'; review bombing registrado na imprensa"
+    },
+    {
+      "appid": 2531310,
+      "jogo": "The Last of Us Part II Remastered",
+      "personagem": "Abby e Ellie",
+      "grupo": "nucleo",
+      "motivo": "reacao intensa ao corpo musculoso de Abby; objeto de estudo academico"
+    },
+    {
+      "appid": 2842040,
+      "jogo": "Star Wars Outlaws",
+      "personagem": "Kay Vess",
+      "grupo": "nucleo",
+      "motivo": "criticas de que a protagonista seria 'feia' em comparacao com a atriz da captura facial"
+    },
+    {
+      "appid": 2651280,
+      "jogo": "Marvel's Spider-Man 2",
+      "personagem": "Mary Jane Watson",
+      "grupo": "nucleo",
+      "motivo": "personagem feminina em destaque; criticas ao rosto de Mary Jane (2023)"
+    },
+    {
+      "appid": 1845910,
+      "jogo": "Dragon Age: The Veilguard",
+      "personagem": "Rook, Taash e companheiras",
+      "grupo": "nucleo",
+      "motivo": "criticas de que os personagens seriam 'feios', ao design e a musculatura de Taash; review bombing"
+    },
+    {
+      "appid": 1238000,
+      "jogo": "Mass Effect: Andromeda",
+      "personagem": "Sara Ryder",
+      "grupo": "nucleo",
+      "motivo": "rosto e expressoes de Sara Ryder e de personagens femininas ridicularizados no lancamento"
+    },
+    {
+      "appid": 1888930,
+      "jogo": "The Last of Us Part I",
+      "personagem": "Ellie",
+      "grupo": "controle",
+      "motivo": "refeito com rosto de Ellie alterado; review bombing por problemas tecnicos do port de PC (bom contraste tecnico x afetivo)"
+    },
+    {
+      "appid": 315210,
+      "jogo": "Suicide Squad: Kill the Justice League",
+      "personagem": "Harley Quinn",
+      "grupo": "controle",
+      "motivo": "criticas a aparencia de Harley Quinn ('feia') e rotulo de 'woke'; alto volume de reviews negativas"
+    }
   ]
 }
