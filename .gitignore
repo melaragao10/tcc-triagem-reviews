@@ -5,3 +5,5 @@ __pycache__/
 
 # Sistema
 .DS_Store
+*.log
+reports/completo/

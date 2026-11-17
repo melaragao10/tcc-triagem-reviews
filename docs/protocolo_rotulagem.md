@@ -39,9 +39,27 @@ tambem as iniciais T, A, M, I).
 | Categoria | Quando usar | Exemplo |
 |---|---|---|
 | Tecnico | Critica a falhas de funcionamento: bugs, travamentos, desempenho, servidor, controles, salvamento. | "Fecha sozinho na segunda fase." |
-| Afetivo-visual | Rejeicao a aparencia ou representacao de personagens femininas (beleza, feminilidade, corpo, rosto, roupa). | "A protagonista parece um homem." |
+| Afetivo-visual | Rejeicao a aparencia ou a representacao de personagens femininas. Subtipo **aparencia**: beleza, feminilidade, corpo, rosto, roupa. Subtipo **representacao**: critica ideologica dirigida a personagem feminina ou ao papel das mulheres no jogo ("woke", "lacracao", "forcada"). | Aparencia: "A protagonista parece um homem." Representacao: "Forcaram a barra com a protagonista, so lacracao." |
 | Misto | Contem as duas criticas acima no mesmo review. | "O servidor cai e a personagem e feia." |
 | Indefinido | Nenhuma das duas: elogios, historia, preco, jogabilidade sem falha tecnica, texto vazio ou sem sentido. | "Gostei da historia." |
+
+## Subtipo do afetivo-visual
+Todo review rotulado como Afetivo-visual ou Misto leva na coluna
+`observacao` o subtipo: `subtipo:aparencia` ou `subtipo:representacao`
+(ou os dois, separados por virgula). Isso nao muda as quatro categorias
+nem as metricas principais; permite relatar separadamente os dois
+fenomenos.
+
+## Limite da critica ideologica
+A categoria cobre a critica ideologica **dirigida a personagens femininas**
+ou ao papel das mulheres no jogo. Critica ideologica geral, sem relacao
+com personagem feminina, nao entra:
+- "Jogo woke, nao compro." (sem personagem feminina): Indefinido,
+  observacao `ideologico_geral`.
+- "A protagonista e so lacracao." : Afetivo-visual, `subtipo:representacao`.
+- Critica a personagens LGBT ou a etnia, sem foco em mulheres:
+  Indefinido, observacao `ideologico_geral`.
+Registrar a contagem de `ideologico_geral` para discutir no texto.
 
 ## Casos dificeis (decidir e registrar em `observacao`)
 - **Negacao:** "nao tem bug nenhum" e Indefinido (o sistema hoje erra
