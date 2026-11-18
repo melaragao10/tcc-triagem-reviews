@@ -70,3 +70,22 @@ class TestBilingue(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestNeutralizadores(unittest.TestCase):
+    def test_negacao_neutraliza(self):
+        r = classify_review("Eu nao vi essa lacracao que falam", BASE)
+        self.assertEqual(r["categoria"], "Indefinido")
+        self.assertIn("ignorado", r["indicadores_afetivos"])
+
+    def test_critica_sem_negacao_pontua(self):
+        self.assertEqual(classify_review("Jogo cheio de lacracao", BASE)["categoria"], "Afetivo-visual")
+
+    def test_nao_gostei_nao_neutraliza(self):
+        self.assertEqual(classify_review("Nao gostei, jogo muito woke", BASE)["categoria"], "Afetivo-visual")
+
+    def test_woke_up_e_excecao(self):
+        self.assertEqual(classify_review("The fandom woke up today", BASE)["categoria"], "Indefinido")
+
+    def test_preposicao_no_nao_neutraliza(self):
+        self.assertEqual(classify_review("fora a lacracao no mundo dos games", BASE)["categoria"], "Afetivo-visual")

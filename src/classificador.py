@@ -25,6 +25,10 @@ indicadores antes do casamento por radical. Radicais de uma unica
 palavra com menos de 3 letras deixam de casar sozinhos (overstemming
 do RSLP, ex: "trava" e "trem" -> "tr"). Ver docs/decisao_stemming.md.
 
+v2.1: neutralizadores (negacao/defesa perto do termo afetivo, ex.:
+"nao e woke", "sem lacracao") e "excecoes_texto" (ex.: "woke up").
+Ver docs/decisao_base_v2.md.
+
 v2.0: base de conhecimento bilingue e indicadores compostos.
   - A base pode ter uma secao opcional "en" (termos em ingles). Os dois
     idiomas sao aplicados a todo review e os escores somam. Termos em
@@ -39,6 +43,7 @@ v2.0: base de conhecimento bilingue e indicadores compostos.
 
 import re
 import unicodedata
+from functools import lru_cache
 
 import nltk
 from nltk.stem import RSLPStemmer
@@ -49,6 +54,12 @@ except LookupError:
     nltk.download("rslp")
 
 _stemmer = RSLPStemmer()
+
+
+@lru_cache(maxsize=500_000)
+def _stem_word(word: str) -> str:
+    """Radical de uma palavra, com cache (o vocabulario dos reviews se repete muito)."""
+    return _stemmer.stem(word)
 
 
 def remove_accents(value: str) -> str:
@@ -84,10 +95,38 @@ def stem_phrase(phrase: str) -> str:
     Obs.: o RSLP NAO une "cai" e "caiu" (cada um fica como esta); por
     isso "servidor cai" foi cadastrado explicitamente na base.
     """
-    return " ".join(_stemmer.stem(word) for word in phrase.split())
+    return " ".join(_stem_word(word) for word in phrase.split())
 
 
-def find_indicators(text: str, indicators: dict, use_stem: bool = True) -> tuple:
+def _neutralizador(tokens: list, inicio: int, fim: int, neutralizers: list):
+    """
+    Negacao/defesa: devolve o neutralizador encontrado perto do termo
+    (6 palavras antes ou 3 depois) ou None. Ex.: "nao e woke", "sem
+    lacracao", "quem fala em woke e bobo". Regra explicita e auditavel.
+    """
+    if not neutralizers:
+        return None
+    contexto = (
+        tokens[max(0, inicio - NEUTRALIZER_BEFORE) : inicio],
+        tokens[fim + 1 : fim + 1 + NEUTRALIZER_AFTER],
+    )
+    for neutralizador in neutralizers:
+        alvo = normalize_text(neutralizador).split()
+        n = len(alvo)
+        for trecho in contexto:
+            for i in range(len(trecho) - n + 1):
+                if trecho[i : i + n] == alvo:
+                    return neutralizador
+    return None
+
+
+NEUTRALIZER_BEFORE = 6
+NEUTRALIZER_AFTER = 3
+
+
+def find_indicators(
+    text: str, indicators: dict, use_stem: bool = True, neutralizers: list = None
+) -> tuple:
     """
     Verifica quais indicadores de um grupo estao presentes no texto,
     em duas etapas:
@@ -102,10 +141,13 @@ def find_indicators(text: str, indicators: dict, use_stem: bool = True) -> tuple
 
     O metodo de casamento (literal ou via radical) fica registrado
     para fins de auditoria. Com use_stem=False so ha casamento literal
-    (usado para os termos em ingles).
+    (usado para os termos em ingles). Com "neutralizers", um termo literal
+    com negacao/defesa por perto e ignorado e fica registrado como
+    "(ignorado: ...)", sem escore.
     """
     score = 0
     found = []
+    tokens = text.split()
     stemmed_text = stem_phrase(text) if use_stem else ""
     matched_stems = set()
 
@@ -128,9 +170,20 @@ def find_indicators(text: str, indicators: dict, use_stem: bool = True) -> tuple
         if stemmed_indicator in matched_stems:
             # Mesmo radical ja contabilizado (ex: "bug" e "bugs").
             continue
-        if _contains(text, normalized_indicator):
-            score += weight
-            found.append(indicator)
+        spans = _spans(tokens, normalized_indicator)
+        if not spans:
+            continue
+        motivos = []
+        for inicio, fim in spans:
+            motivo = _neutralizador(tokens, inicio, fim, neutralizers)
+            if motivo is None:
+                score += weight
+                found.append(indicator)
+                matched_stems.add(stemmed_indicator)
+                break
+            motivos.append(motivo)
+        else:
+            found.append(f"{indicator} (ignorado: perto de '{motivos[0]}')")
             matched_stems.add(stemmed_indicator)
 
     # Etapa 2: comparacao por radical, apenas para indicadores cujo
@@ -183,7 +236,7 @@ def _spans(tokens: list, expression: str) -> list:
     ]
 
 
-def find_compounds(text: str, compounds: list) -> tuple:
+def find_compounds(text: str, compounds: list, neutralizers: list = None) -> tuple:
     """
     Indicadores compostos: um termo do grupo A e um termo do grupo B a
     no maximo "janela" palavras de distancia (sem sobrepor). Cada regra
@@ -210,6 +263,10 @@ def find_compounds(text: str, compounds: list) -> tuple:
                         else:
                             continue
                         if distancia <= janela:
+                            if _neutralizador(
+                                tokens, min(ini_a, ini_b), max(fim_a, fim_b), neutralizers
+                            ):
+                                continue
                             achou = (termo_a, termo_b)
                             break
                     if achou:
@@ -247,21 +304,31 @@ def apply_decision_rule(technical_score: int, affective_score: int) -> tuple:
     return "Indefinido", "R4"
 
 
-def _score_group(text: str, knowledge_base: dict, group: str) -> tuple:
+def _score_group(text: str, knowledge_base: dict, group: str, excecoes=None) -> tuple:
     """
     Soma, para um grupo (tecnico ou afetivo_visual): os termos em
     portugues (literal + radical), os termos em ingles da secao "en"
-    (so literal) e os indicadores compostos de cada idioma.
+    (so literal) e os indicadores compostos de cada idioma. No grupo
+    afetivo_visual, negacao/defesa por perto neutraliza o termo.
     """
-    score, found = find_indicators(text, knowledge_base.get(group, {}))
-    secoes = [knowledge_base]
+    secoes = [knowledge_base] + ([knowledge_base["en"]] if "en" in knowledge_base else [])
+    neutralizers = []
+    if group == "afetivo_visual":
+        for secao in secoes:
+            neutralizers += secao.get("neutralizadores", [])
+
+    score, found = find_indicators(
+        text, knowledge_base.get(group, {}), neutralizers=neutralizers
+    )
     if "en" in knowledge_base:
-        secoes.append(knowledge_base["en"])
-        s, f = find_indicators(text, knowledge_base["en"].get(group, {}), use_stem=False)
+        s, f = find_indicators(
+            text, knowledge_base["en"].get(group, {}),
+            use_stem=False, neutralizers=neutralizers,
+        )
         score += s
         found += f
     for secao in secoes:
-        s, f = find_compounds(text, secao.get("compostos_" + group, []))
+        s, f = find_compounds(text, secao.get("compostos_" + group, []), neutralizers)
         score += s
         found += f
     return score, found
@@ -275,11 +342,22 @@ def classify_review(original_text, knowledge_base: dict) -> dict:
     """
     normalized_text = normalize_text(original_text)
 
+    # Expressoes que contem um termo da base mas nao tem o sentido dele
+    # (ex.: "woke up" = "acordou") saem do texto so para a busca.
+    search_text = normalized_text
+    for frase in knowledge_base.get("excecoes_texto", []):
+        search_text = re.sub(
+            r"(?<![a-z0-9])" + re.escape(normalize_text(frase)) + r"(?![a-z0-9])",
+            " ",
+            search_text,
+        )
+    search_text = re.sub(r"\s+", " ", search_text).strip()
+
     technical_score, technical_indicators = _score_group(
-        normalized_text, knowledge_base, "tecnico"
+        search_text, knowledge_base, "tecnico"
     )
     affective_score, affective_indicators = _score_group(
-        normalized_text, knowledge_base, "afetivo_visual"
+        search_text, knowledge_base, "afetivo_visual"
     )
 
     category, rule = apply_decision_rule(technical_score, affective_score)

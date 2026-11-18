@@ -16,3 +16,18 @@
 - Indicador composto e termo simples equivalente (ex.: "personagem feia") podem pontuar os dois; so afeta a confianca de Misto.
 - Fonte dos termos: amostra de candidatos de jogos de DESENVOLVIMENTO (Dragon Age: Veilguard, TLOU II, Star Wars Outlaws, Suicide Squad, Horizon). A medicao deve usar jogos de TESTE nao vistos.
 - Contagem de categorias na amostra de candidatos NAO e avaliacao (amostra enviesada). Avaliacao = gabarito manual em jogos de teste.
+
+## v2.1: neutralizadores e excecoes (ajuste apos conferencia manual)
+
+Conferencia manual de 60 reviews pt-BR classificados como Afetivo-visual pela v2.0 (amostra aleatoria, rotulada a mao):
+- 36 critica real (ideologica ou de aparencia), 1 duvida, 23 erros -> precisao 36/59 = 61%.
+- Erros tipicos: defesa do jogo ("quem fala em woke e bobo"), negacao ("nao vi lacracao", "sem lacracao"), mencao ("reclamam que ela e feia"), "woke up" (verbo em ingles), "personagens horriveis" (roteiro/animacao, nao aparencia).
+
+Mudancas (regras explicitas, registradas no relatorio como "(ignorado: perto de 'X')"):
+- `neutralizadores`: negacao/defesa ate 6 palavras antes ou 3 depois do termo afetivo cancela o escore (ex.: "nao vi", "sem", "nem", "mimimi", "reclamam", "quem fala"). So no grupo afetivo_visual. "nao gostei" NAO neutraliza.
+- `excecoes_texto`: "woke up" etc. saem do texto antes da busca.
+- Composto de aparencia: removidos `ela`, `estranha(s)`, `horrivel/horriveis`, `desproporcional` (ambiguos); em ingles removido `terribly ugly` (falso positivo de desempenho grafico).
+- Composto "agenda + woke" removido (dupla contagem com `woke`).
+
+Resultado na MESMA amostra usada para descobrir os erros (desenvolvimento, otimista): precisao 61% -> 78%, os 36 criticos reais continuam detectados. Os 10 erros restantes sao defesa/mencao que exigem interpretacao semantica (limite da abordagem simbolica, a discutir no TCC).
+A medicao final deve ser feita em jogos de TESTE com gabarito novo.

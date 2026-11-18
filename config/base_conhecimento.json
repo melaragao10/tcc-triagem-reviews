@@ -1,5 +1,33 @@
 {
-  "versao": "2.0",
+  "versao": "2.1",
+  "excecoes_texto": [
+    "woke up",
+    "woken up",
+    "wake up",
+    "woke me",
+    "woke from"
+  ],
+  "neutralizadores": [
+    "nao e",
+    "nao eh",
+    "nao vi",
+    "nao ha",
+    "nao tem",
+    "nao existe",
+    "nao importo",
+    "nao quero saber",
+    "nao ligo",
+    "nem",
+    "sem",
+    "nunca",
+    "ninguem",
+    "inexistente",
+    "mimimi",
+    "reclamam",
+    "reclamacoes",
+    "polemica",
+    "quem fala"
+  ],
   "tecnico": {
     "bug": 1,
     "bugs": 1,
@@ -60,30 +88,35 @@
         "mulher",
         "mulheres",
         "npc",
-        "npcs",
-        "ela"
+        "npcs"
       ],
       "grupo_b": [
         "feia",
         "feio",
         "feias",
         "feios",
-        "horrivel",
-        "horriveis",
         "masculina",
         "masculinas",
         "masculinizada",
         "masculinizadas",
         "barba",
-        "barbado",
-        "estranha",
-        "estranhas",
-        "desproporcional"
+        "barbado"
       ],
       "peso": 3
     }
   ],
   "en": {
+    "neutralizadores": [
+      "not",
+      "never",
+      "without",
+      "isn t",
+      "aren t",
+      "don t",
+      "doesn t",
+      "didn t",
+      "nothing"
+    ],
     "tecnico": {
       "crash": 2,
       "crashes": 2,
@@ -123,7 +156,6 @@
       "unnecessarily ugly": 3,
       "hideous": 3,
       "not attractive": 2,
-      "terribly ugly": 3,
       "look like a man": 3,
       "looks like a man": 3,
       "butch": 3,
@@ -176,7 +208,6 @@
           "propaganda"
         ],
         "grupo_b": [
-          "woke",
           "political",
           "lgbt",
           "lgbtq",
