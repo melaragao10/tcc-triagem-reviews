@@ -301,22 +301,6 @@ tcc-triagem-reviews/
 
 ---
 
-## Andamento
-
-- [x] VM, Docker, estrutura do projeto e Dockerfile
-- [x] Base de conhecimento v2.3 e classificador (bilíngue, compostos, neutralizadores)
-- [x] Testes automatizados, com build e testes rodando na VM (ARM64)
-- [x] Ferramentas de validação: coleta Steam, amostra cega, avaliação
-- [x] Coleta dirigida em português e inglês (jogos polêmicos e avaliações negativas)
-- [x] Painel de resultados para a banca: um painel só, com filtro de idioma, e painel ao vivo
-- [x] Código versionado neste repositório (os CSVs coletados ficam fora do Git)
-- [ ] Rotular a amostra (gabarito) e comparar automático × manual (precisão, revocação, F1, kappa)
-- [ ] Ajustar a base com os erros do gabarito (descobrir termos só nos jogos de desenvolvimento)
-- [ ] Confirmar com a orientadora a definição de Técnico e Afetivo-visual e o escopo do inglês
-- [ ] Atualizar o texto do TCC e gerar os relatórios finais
-
-O passo a passo detalhado está em [PROXIMOS_PASSOS.md](PROXIMOS_PASSOS.md).
-
 ## Decisões técnicas
 
 - **IA simbólica em vez de ML/DL** — transparência, auditabilidade e execução sem GPU.
