@@ -40,7 +40,10 @@ Motivo: entre os reviews Indefinidos pt-BR (amostra de 8.000), os pares mais fre
 - Fora do escopo por ora: elogio de graficos ("graficos lindos", "expressoes faciais") e trilha sonora; decidir se "visual geral" entra em Afetivo-visual (reduziria muito o Indefinido, mas amplia o escopo alem de personagem/representacao).
 - Efeito esperado, ainda nao medido: Tecnico pt-BR de ~10% para ~13%.
 
-## Decisoes confirmadas (v2.2)
-- "Bem otimizado" e termos neutros de desempenho (otimizado, otimizacao, fps, desempenho) contam como Tecnico: a categoria e definida pelo assunto, nao pela polaridade.
-- Elogio de graficos ("graficos lindos", "expressoes faciais" em geral) NAO entra em Afetivo-visual. A categoria fica restrita a aparencia e representacao de personagens e a critica ideologica (Opcao B).
-- Ainda a validar com a orientadora no texto do TCC.
+## v2.3: aspectos do jogo (historia, graficos, jogabilidade) contam como Tecnico
+Decisao da autora: elogio ou critica sobre historia e graficos e Tecnico; elogio de graficos NAO e Afetivo-visual.
+- Tecnico passa a significar "avaliacao dos aspectos do jogo enquanto produto" (desempenho, graficos, historia, jogabilidade, som, mecanicas). Afetivo-visual fica restrito a aparencia/representacao de personagens e critica ideologica.
+- Termos peso 1: historia, enredo, roteiro, narrativa, jogabilidade, gameplay, graficos, trilha sonora, dublagem, combate, mundo aberto, missoes, mecanicas, animacoes, cenarios (+ equivalentes em ingles).
+- Efeito esperado e observado: Indefinido cai muito; Misto cresce (reviews ideologicos quase sempre falam de historia); Afetivo-visual puro encolhe.
+- Atencao no TCC: o nome "Tecnico" fica mais amplo que a definicao original (falha tecnica). Justificar ou renomear (ex.: "Aspectos do jogo") e confirmar com a orientadora.
+- Em 60 reviews pt-BR antes afetivos: 36 Afetivo -> 11 Afetivo + 35 Misto + 10 Tecnico + 4 Indefinido (so desenvolvimento).

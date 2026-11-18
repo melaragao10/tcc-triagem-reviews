@@ -47,9 +47,9 @@ class TestBilingue(unittest.TestCase):
         r = classify_review("A protagonista tem barba, ficou estranho", BASE)
         self.assertEqual(r["categoria"], "Afetivo-visual")
 
-    def test_elogio_nao_dispara(self):
+    def test_elogio_de_personagem_nao_e_afetivo(self):
         r = classify_review("The characters are beautiful and the story is great", BASE)
-        self.assertEqual(r["categoria"], "Indefinido")
+        self.assertEqual(r["categoria"], "Tecnico")  # "story" e aspecto do jogo; elogio de personagem nao e critica
 
     def test_forced_sozinho_nao_dispara(self):
         r = classify_review("I was forced to play as Abby for hours", BASE)
@@ -99,8 +99,15 @@ class TestVocabularioTecnicoV22(unittest.TestCase):
     def test_otimizacao_en(self):
         self.assertEqual(classify_review("Poorly optimized port", BASE)["categoria"], "Tecnico")
 
-    def test_elogio_de_historia_continua_indefinido(self):
-        self.assertEqual(classify_review("Historia incrivel, obra prima", BASE)["categoria"], "Indefinido")
+    def test_elogio_de_historia_e_graficos_e_tecnico_v23(self):
+        self.assertEqual(classify_review("Historia incrivel, obra prima", BASE)["categoria"], "Tecnico")
+        self.assertEqual(classify_review("Graficos lindos", BASE)["categoria"], "Tecnico")
+
+    def test_review_sem_aspecto_continua_indefinido(self):
+        self.assertEqual(classify_review("Jogo bom, recomendo", BASE)["categoria"], "Indefinido")
+
+    def test_woke_com_historia_vira_misto_v23(self):
+        self.assertEqual(classify_review("Jogo woke, historia ruim", BASE)["categoria"], "Misto")
 
     def test_misto_com_otimizacao(self):
         self.assertEqual(classify_review("A protagonista e feia e o jogo e mal otimizado", BASE)["categoria"], "Misto")
