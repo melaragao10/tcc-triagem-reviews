@@ -59,8 +59,8 @@ Mudancas, todas genericas (nenhuma depende de um review especifico):
 - Compostos novos: tecnico "jogo/mundo/mapa/visual + lindo/bonito/feio" (janela 2); afetivo "personagem/protagonista/mulher + bonita/gostosa/linda/sexy" (janela 3, peso 2), porque o gabarito trata aparencia (inclusive elogio) como afetivo.
 
 Medicao (MESMOS 125 reviews dos quais saiu o ajuste, portanto OTIMISTA):
-- Desenvolvimento (102): acuracia 0,65 -> 0,82; precisao Tecnico 0,93 -> 0,96; revocacao Tecnico 0,64 -> 0,82; precisao Indefinido 0,45 -> 0,65; precisao Misto 0,40 -> 0,67.
-- Teste (23): inalterado (0,87), porque nenhuma mudanca tocou esses reviews. Nao prova generalizacao.
+- Desenvolvimento (102): acuracia 0,71 -> 0,89 (gabarito revisado); precisao Tecnico 0,93 -> 0,96; revocacao Tecnico 0,64 -> 0,82; precisao Indefinido 0,45 -> 0,65; precisao Misto 0,40 -> 0,67.
+- Teste (23): 0,87 (v2.3) -> 0,83 (v2.4), um review a menos de 23. O ganho em desenvolvimento nao se confirmou nos jogos de teste; 23 reviews nao permitem concluir.
 - A medicao valida da v2.4 e nas linhas ainda nao rotuladas da amostra e em gabarito novo.
 
 Erros que sobram (21, 2 de jogos de teste), por tipo:
