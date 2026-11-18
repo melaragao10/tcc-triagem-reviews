@@ -295,3 +295,16 @@ O passo a passo detalhado está em [PROXIMOS_PASSOS.md](PROXIMOS_PASSOS.md).
 
 - Negação não é tratada ("não tem bug nenhum" vira Técnico).
 - Termos curtos podem casar pelo radical ("lag" com "lagado").
+
+## Como regerar os dados
+
+Os CSVs coletados (`data/steam_*.csv`, `data/en/`) e os relatorios de `reports/completo*` nao ficam no Git (mais de 100 MB). Para regenerar:
+
+    docker compose run --rm classificador python -m src.coleta_steam --lote config/jogos.json --filtro helpful --max 3000 --saida data
+    docker compose run --rm classificador python -m src.coleta_steam --lote config/jogos.json --filtro helpful --max 3000 --tipo negativas --saida data
+    docker compose run --rm classificador python -m src.coleta_steam --lote config/jogos.json --idioma english --filtro helpful --max 3000 --saida data/en
+    docker compose run --rm classificador python -m src.coleta_steam --lote config/jogos.json --idioma english --filtro helpful --max 3000 --tipo negativas --saida data/en
+    docker compose run --rm classificador python main.py --entrada data/steam_*.csv --saida reports/completo
+    docker compose run --rm classificador python main.py --entrada data/en/steam_*.csv --saida reports/completo_en
+
+A coleta inclui jogos polemicos e reviews negativas de proposito (amostragem intencional, ver `docs/coleta_dirigida.md`); a distribuicao entre categorias nao representa a populacao de reviews da Steam.

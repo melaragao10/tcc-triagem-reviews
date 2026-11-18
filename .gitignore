@@ -7,3 +7,11 @@ __pycache__/
 .DS_Store
 *.log
 reports/completo/
+
+# dados coletados e relatorios gerados (regeneraveis; ver README)
+data/steam_*.csv
+data/en/
+reports/completo/
+reports/completo_en/
+reports/gabarito/
+*.log
