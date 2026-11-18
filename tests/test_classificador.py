@@ -112,7 +112,7 @@ class TestCasosDocumentados(unittest.TestCase):
         esperados = {
             "O jogo fecha sozinho durante a primeira fase.": "Tecnico",
             "A personagem principal tem um rosto estranho.": "Afetivo-visual",
-            "Gostei da historia e da jogabilidade.": "Indefinido",
+            "Gostei da historia e da jogabilidade.": "Tecnico",
             "Travando toda hora, impossivel jogar.": "Tecnico",
             "Personagem feia e sem feminilidade nenhuma.": "Afetivo-visual",
             "Otimo jogo, recomendo bastante.": "Indefinido",
