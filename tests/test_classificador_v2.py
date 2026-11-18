@@ -89,3 +89,18 @@ class TestNeutralizadores(unittest.TestCase):
 
     def test_preposicao_no_nao_neutraliza(self):
         self.assertEqual(classify_review("fora a lacracao no mundo dos games", BASE)["categoria"], "Afetivo-visual")
+
+
+class TestVocabularioTecnicoV22(unittest.TestCase):
+    def test_otimizacao_pt(self):
+        self.assertEqual(classify_review("Jogo muito mal otimizado", BASE)["categoria"], "Tecnico")
+        self.assertEqual(classify_review("A otimizacao esta otima", BASE)["categoria"], "Tecnico")
+
+    def test_otimizacao_en(self):
+        self.assertEqual(classify_review("Poorly optimized port", BASE)["categoria"], "Tecnico")
+
+    def test_elogio_de_historia_continua_indefinido(self):
+        self.assertEqual(classify_review("Historia incrivel, obra prima", BASE)["categoria"], "Indefinido")
+
+    def test_misto_com_otimizacao(self):
+        self.assertEqual(classify_review("A protagonista e feia e o jogo e mal otimizado", BASE)["categoria"], "Misto")

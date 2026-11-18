@@ -31,3 +31,11 @@ Mudancas (regras explicitas, registradas no relatorio como "(ignorado: perto de 
 
 Resultado na MESMA amostra usada para descobrir os erros (desenvolvimento, otimista): precisao 61% -> 78%, os 36 criticos reais continuam detectados. Os 10 erros restantes sao defesa/mencao que exigem interpretacao semantica (limite da abordagem simbolica, a discutir no TCC).
 A medicao final deve ser feita em jogos de TESTE com gabarito novo.
+
+## v2.2: vocabulario tecnico (otimizacao e desempenho)
+
+Motivo: entre os reviews Indefinidos pt-BR (amostra de 8.000), os pares mais frequentes incluem "mal otimizado" (152) e "bem otimizado" (98): desempenho aparece muito e a v2.1 nao reconhecia.
+- Termos novos (pt e en): otimizado/otimizacao/optimized/optimization, desempenho, fps, framerate, travou, crashou, bugado, congelou, engasgando, gargalo, roda mal/bem, tela azul, nao carrega/roda, requisitos.
+- DECISAO A CONFIRMAR COM A ORIENTADORA: termos de otimizacao e fps sao neutros quanto a polaridade ("bem otimizado" tambem conta como Tecnico). Se a categoria Tecnico for so reclamacao, remover os de peso 1 e manter os de problema.
+- Fora do escopo por ora: elogio de graficos ("graficos lindos", "expressoes faciais") e trilha sonora; decidir se "visual geral" entra em Afetivo-visual (reduziria muito o Indefinido, mas amplia o escopo alem de personagem/representacao).
+- Efeito esperado, ainda nao medido: Tecnico pt-BR de ~10% para ~13%.
