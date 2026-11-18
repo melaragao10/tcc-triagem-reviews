@@ -39,3 +39,8 @@ Motivo: entre os reviews Indefinidos pt-BR (amostra de 8.000), os pares mais fre
 - DECISAO A CONFIRMAR COM A ORIENTADORA: termos de otimizacao e fps sao neutros quanto a polaridade ("bem otimizado" tambem conta como Tecnico). Se a categoria Tecnico for so reclamacao, remover os de peso 1 e manter os de problema.
 - Fora do escopo por ora: elogio de graficos ("graficos lindos", "expressoes faciais") e trilha sonora; decidir se "visual geral" entra em Afetivo-visual (reduziria muito o Indefinido, mas amplia o escopo alem de personagem/representacao).
 - Efeito esperado, ainda nao medido: Tecnico pt-BR de ~10% para ~13%.
+
+## Decisoes confirmadas (v2.2)
+- "Bem otimizado" e termos neutros de desempenho (otimizado, otimizacao, fps, desempenho) contam como Tecnico: a categoria e definida pelo assunto, nao pela polaridade.
+- Elogio de graficos ("graficos lindos", "expressoes faciais" em geral) NAO entra em Afetivo-visual. A categoria fica restrita a aparencia e representacao de personagens e a critica ideologica (Opcao B).
+- Ainda a validar com a orientadora no texto do TCC.
