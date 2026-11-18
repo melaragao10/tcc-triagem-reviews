@@ -1,5 +1,5 @@
 {
-  "versao": "1.1",
+  "versao": "2.0",
   "tecnico": {
     "bug": 1,
     "bugs": 1,
@@ -40,6 +40,172 @@
     "deveria ser mais bonita": 3,
     "roupa feia": 2,
     "design da personagem e feio": 3,
-    "aparencia horrivel": 3
+    "aparencia horrivel": 3,
+    "parece homem": 3,
+    "cara de homem": 3,
+    "lacracao": 2,
+    "diversidade forcada": 3,
+    "agenda lgbt": 3,
+    "agenda progressista": 3,
+    "cota de diversidade": 3
+  },
+  "compostos_afetivo_visual": [
+    {
+      "nome": "personagem+aparencia negativa",
+      "janela": 4,
+      "grupo_a": [
+        "personagem",
+        "personagens",
+        "protagonista",
+        "mulher",
+        "mulheres",
+        "npc",
+        "npcs",
+        "ela"
+      ],
+      "grupo_b": [
+        "feia",
+        "feio",
+        "feias",
+        "feios",
+        "horrivel",
+        "horriveis",
+        "masculina",
+        "masculinas",
+        "masculinizada",
+        "masculinizadas",
+        "barba",
+        "barbado",
+        "estranha",
+        "estranhas",
+        "desproporcional"
+      ],
+      "peso": 3
+    }
+  ],
+  "en": {
+    "tecnico": {
+      "crash": 2,
+      "crashes": 2,
+      "crashing": 2,
+      "crashed": 2,
+      "freezes": 2,
+      "freezing": 2,
+      "stutter": 2,
+      "stuttering": 2,
+      "low fps": 2,
+      "fps drops": 3,
+      "frame drops": 3,
+      "black screen": 3,
+      "won t launch": 3,
+      "wont launch": 3,
+      "won t start": 3,
+      "unplayable": 3,
+      "memory leak": 3,
+      "poor optimization": 3,
+      "bad optimization": 3,
+      "performance issues": 2,
+      "game breaking bug": 3,
+      "save corrupted": 3,
+      "corrupted save": 3,
+      "infinite loading": 3,
+      "server issues": 2,
+      "disconnects": 2,
+      "disconnecting": 2,
+      "input lag": 3,
+      "glitch": 1,
+      "glitches": 1,
+      "glitchy": 1,
+      "buggy": 1
+    },
+    "afetivo_visual": {
+      "ugly face": 3,
+      "unnecessarily ugly": 3,
+      "hideous": 3,
+      "not attractive": 2,
+      "terribly ugly": 3,
+      "look like a man": 3,
+      "looks like a man": 3,
+      "butch": 3,
+      "woke": 2,
+      "forced feminism": 3,
+      "dei hire": 3,
+      "forced diversity": 3,
+      "forced inclusion": 3,
+      "pandering": 2,
+      "tokenism": 3,
+      "token minority": 3,
+      "mouthpiece": 2,
+      "mouthpieces": 2,
+      "preachy": 2
+    },
+    "compostos_afetivo_visual": [
+      {
+        "nome": "character+negative appearance",
+        "janela": 4,
+        "grupo_a": [
+          "character",
+          "characters",
+          "protagonist",
+          "woman",
+          "women",
+          "female",
+          "npc",
+          "npcs",
+          "she",
+          "her",
+          "lead"
+        ],
+        "grupo_b": [
+          "ugly",
+          "unattractive",
+          "hideous",
+          "unappealing",
+          "masculine",
+          "manly",
+          "butch",
+          "deformed"
+        ],
+        "peso": 3
+      },
+      {
+        "nome": "agenda ideologica",
+        "janela": 3,
+        "grupo_a": [
+          "agenda",
+          "propaganda"
+        ],
+        "grupo_b": [
+          "woke",
+          "political",
+          "lgbt",
+          "lgbtq",
+          "progressive",
+          "feminist",
+          "dei",
+          "diversity"
+        ],
+        "peso": 3
+      },
+      {
+        "nome": "personagem inserido por ideologia",
+        "janela": 4,
+        "grupo_a": [
+          "shoehorned"
+        ],
+        "grupo_b": [
+          "character",
+          "characters",
+          "woke",
+          "diversity",
+          "inclusion",
+          "lgbt",
+          "lgbtq",
+          "trans",
+          "agenda"
+        ],
+        "peso": 2
+      }
+    ]
   }
 }
