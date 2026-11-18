@@ -1,5 +1,5 @@
 {
-  "versao": "2.3",
+  "versao": "2.4",
   "excecoes_texto": [
     "woke up",
     "woken up",
@@ -26,7 +26,24 @@
     "reclamam",
     "reclamacoes",
     "polemica",
-    "quem fala"
+    "quem fala",
+    "nao entendi",
+    "nao me importo",
+    "criticas",
+    "insignificante",
+    "pipipi",
+    "amo",
+    "adoro",
+    "besteira",
+    "vazias",
+    "ain",
+    "quem achou",
+    "quem acha",
+    "quem diz",
+    "quem disse",
+    "quem chama",
+    "frescura",
+    "fresco"
   ],
   "tecnico": {
     "bug": 1,
@@ -91,7 +108,26 @@
     "animacoes": 1,
     "cenarios": 1,
     "direcao de arte": 1,
-    "expressoes faciais": 1
+    "expressoes faciais": 1,
+    "loading": 1,
+    "loadings": 1,
+    "tela de carregamento": 1,
+    "grind": 1,
+    "sidequest": 1,
+    "sidequests": 1,
+    "side quest": 1,
+    "side quests": 1,
+    "missao": 1,
+    "batalha": 1,
+    "batalhas": 1,
+    "game play": 1,
+    "repetitivo": 1,
+    "colecionaveis": 1,
+    "dialogos": 1,
+    "nao vai rodar": 2,
+    "coop": 1,
+    "co op": 1,
+    "cooperativo": 1
   },
   "afetivo_visual": {
     "personagem feia": 3,
@@ -143,6 +179,28 @@
         "barbado"
       ],
       "peso": 3
+    },
+    {
+      "nome": "personagem+aparencia positiva",
+      "janela": 3,
+      "grupo_a": [
+        "personagem",
+        "personagens",
+        "protagonista",
+        "mulher",
+        "mulheres",
+        "heroina"
+      ],
+      "grupo_b": [
+        "bonita",
+        "gostosa",
+        "linda",
+        "sexy",
+        "atraente",
+        "bonitas",
+        "gostosas"
+      ],
+      "peso": 2
     }
   ],
   "en": {
@@ -306,5 +364,35 @@
         "peso": 2
       }
     ]
-  }
+  },
+  "aspas_neutralizam_afetivo": true,
+  "aspas_max_caracteres": 60,
+  "compostos_tecnico": [
+    {
+      "nome": "jogo+visual positivo/negativo",
+      "janela": 2,
+      "grupo_a": [
+        "jogo",
+        "game",
+        "mundo",
+        "mapa",
+        "visual",
+        "cenario",
+        "cenarios"
+      ],
+      "grupo_b": [
+        "lindo",
+        "linda",
+        "lindos",
+        "bonito",
+        "bonita",
+        "bonitos",
+        "belo",
+        "bela",
+        "feio",
+        "feia"
+      ],
+      "peso": 1
+    }
+  ]
 }
