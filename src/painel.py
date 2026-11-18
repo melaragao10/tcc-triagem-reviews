@@ -188,6 +188,7 @@ def montar_dados(classificados: pd.DataFrame, avaliacao: dict = None, base: dict
             "util": _numero(getattr(linha, "votos_util", None), int),
             "horas": _numero(getattr(linha, "horas_na_review", None)),
             "man": rotulos.get(str(linha.id_review), ""),
+            "idioma": _texto(getattr(linha, "idioma", "")),
         })
 
     por_jogo = {}
@@ -207,6 +208,7 @@ def montar_dados(classificados: pd.DataFrame, avaliacao: dict = None, base: dict
         "com_indicador": len(classificados) - geral["Indefinido"],
         "periodo": periodo_das_reviews(classificados),
         "idiomas": idiomas_das_reviews(classificados),
+        "opcoes_idioma": opcoes_de_idioma(classificados),
         "fonte": "Steam" if "votos_util" in classificados.columns else "",
         "total": len(classificados),
         "categorias": CATEGORIAS,
@@ -251,6 +253,18 @@ def periodo_das_reviews(classificados: pd.DataFrame) -> list:
     if datas.empty:
         return None
     return [datas.min().strftime("%Y-%m-%d"), datas.max().strftime("%Y-%m-%d")]
+
+
+def opcoes_de_idioma(classificados: pd.DataFrame) -> list:
+    """[{codigo, rotulo, n}] para o filtro de idioma; [] se houver menos de dois idiomas."""
+    if "idioma" not in classificados.columns:
+        return []
+    contagem = classificados["idioma"].map(_texto).value_counts()
+    contagem = contagem[contagem.index != ""]
+    if len(contagem) < 2:
+        return []
+    return [{"codigo": str(c), "rotulo": NOMES_IDIOMA.get(str(c), str(c)), "n": int(n)}
+            for c, n in sorted(contagem.items())]
 
 
 def idiomas_das_reviews(classificados: pd.DataFrame) -> list:
@@ -405,6 +419,7 @@ p { margin: 0; }
 .voltar { display: inline-flex; align-items: center; gap: var(--e2); min-height: 44px; padding: 0 var(--e4) 0 var(--e3); margin-right: var(--e2);
   border: 1px solid var(--cabeca-linha); border-radius: var(--r-pilula); color: var(--cabeca-tinta); text-decoration: none; font-size: var(--t-p); }
 .voltar[hidden] { display: none; }
+.ferramentas label[hidden] { display: none; }
 .voltar:hover { border-color: var(--cabeca-suave); }
 .voltar:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
 .marca-t { stroke: #5b93ea; } .marca-a { stroke: #f08a52; }
@@ -834,6 +849,7 @@ footer { color: var(--tinta-suave); font-size: var(--t-p); }
       <span class="marca"><a class="voltar" id="voltar" href="/" hidden><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Todos os painéis</a>__LOGO__<span class="kicker" id="kicker"></span></span>
       <div class="ferramentas" role="toolbar" aria-label="Opções de exibição">
         <button type="button" id="b-apresentacao" aria-pressed="false" aria-keyshortcuts="P" title="Atalho: tecla P">Modo apresentação</button>
+        <label id="rotulo-idioma" hidden>Idioma <select id="f-idioma"></select></label>
         <label>Tema <select id="f-tema">
           <option value="">Do sistema</option><option value="claro">Claro</option><option value="escuro">Escuro</option>
         </select></label>
@@ -947,6 +963,54 @@ footer { color: var(--tinta-suave); font-size: var(--t-p); }
 (function () {
   "use strict";
   var D = JSON.parse(document.getElementById("dados").textContent);
+  var IDIOMA = "";   // "" = todos; vem de ?idioma=codigo (um só painel, o filtro recorta os dados)
+  function recortarPorIdioma(D0, cod) {
+    var rs = D0.reviews.filter(function (r) { return r.idioma === cod; });
+    var geral = {}, porJogo = {}, ind = { t: {}, a: {} }, rec = null, recJogo = {}, datas = [];
+    D0.categorias.forEach(function (c) { geral[c] = 0; });
+    var temRec = rs.some(function (r) { return r.rec === "sim" || r.rec === "nao"; });
+    if (temRec) { rec = {}; D0.categorias.forEach(function (c) { rec[c] = { sim: 0, nao: 0 }; }); }
+    rs.forEach(function (r) {
+      geral[r.cat] = (geral[r.cat] || 0) + 1;
+      var j = porJogo[r.jogo] = porJogo[r.jogo] || {};
+      D0.categorias.forEach(function (c) { if (j[c] === undefined) j[c] = 0; });
+      j[r.cat] = (j[r.cat] || 0) + 1;
+      [["t", r.it], ["a", r.ia]].forEach(function (par) {
+        par[1].forEach(function (n) {
+          n = n.replace(" (via radical)", "");
+          ind[par[0]][n] = (ind[par[0]][n] || 0) + 1;
+        });
+      });
+      if (r.rec === "sim" || r.rec === "nao") {
+        if (rec && rec[r.cat]) rec[r.cat][r.rec] += 1;
+        var pj = recJogo[r.jogo] = recJogo[r.jogo] || [0, 0];
+        if (r.rec === "sim") pj[0] += 1;
+        pj[1] += 1;
+      }
+      if (/^\d{4}-\d{2}-\d{2}$/.test(r.data || "")) datas.push(r.data);
+    });
+    datas.sort();
+    var ordenado = function (o) {
+      return Object.keys(o).map(function (k) { return [k, o[k]]; })
+        .sort(function (a, b) { return b[1] - a[1] || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0); });
+    };
+    var op = D0.opcoes_idioma.filter(function (o) { return o.codigo === cod; })[0];
+    var novo = {};
+    for (var k in D0) novo[k] = D0[k];
+    novo.reviews = rs; novo.total = rs.length; novo.geral = geral;
+    novo.com_indicador = rs.length - (geral["Indefinido"] || 0);
+    novo.por_jogo = porJogo; novo.indicadores = { t: ordenado(ind.t), a: ordenado(ind.a) };
+    novo.recomendacao = rec; novo.rec_por_jogo = recJogo;
+    novo.periodo = datas.length ? [datas[0], datas[datas.length - 1]] : null;
+    novo.idiomas = op ? [op.rotulo] : [];
+    return novo;
+  }
+  (function () {
+    var cods = (D.opcoes_idioma || []).map(function (o) { return o.codigo; });
+    var pedido = "";
+    try { pedido = new URLSearchParams(location.search).get("idioma") || ""; } catch (e) {}
+    if (pedido && cods.indexOf(pedido) >= 0) { IDIOMA = pedido; D = recortarPorIdioma(D, pedido); }
+  })();
   var NOMES = { "Tecnico": "Técnico", "Afetivo-visual": "Afetivo-visual", "Misto": "Misto", "Indefinido": "Indefinido" };
   var DESC = {
     "Tecnico": "Só indicadores de falha técnica (regra R1).",
@@ -1770,6 +1834,25 @@ footer { color: var(--tinta-suave); font-size: var(--t-p); }
     atualizar();
   }
   document.addEventListener("mousedown", function (ev) { if (!ev.target.closest || !ev.target.closest(".dd")) fecharTodos(); });
+  var selIdioma = document.getElementById("f-idioma");
+  if (D.opcoes_idioma && D.opcoes_idioma.length > 1) {
+    var totalIdiomas = D.opcoes_idioma.reduce(function (s, o) { return s + o.n; }, 0);
+    selIdioma.appendChild(el("option", { value: "", texto: "Todos (" + fmt.format(totalIdiomas) + ")" }));
+    D.opcoes_idioma.forEach(function (o) {
+      selIdioma.appendChild(el("option", { value: o.codigo, texto: o.rotulo + " (" + fmt.format(o.n) + ")" }));
+    });
+    selIdioma.value = IDIOMA;
+    document.getElementById("rotulo-idioma").hidden = false;
+    selIdioma.addEventListener("change", function () {
+      try {
+        var u = new URL(location.href);
+        if (selIdioma.value) u.searchParams.set("idioma", selIdioma.value); else u.searchParams.delete("idioma");
+        u.hash = "";
+        location.href = u.toString();
+      } catch (e) { location.search = selIdioma.value ? "?idioma=" + encodeURIComponent(selIdioma.value) : ""; }
+    });
+    [selIdioma].forEach(dropdown);
+  }
   [selTema, selJogo, selOrdem].forEach(dropdown);
   document.getElementById("b-imprimir").addEventListener("click", function () { window.print(); });
   // na impressão sai a lista filtrada inteira, não só os 30 primeiros
