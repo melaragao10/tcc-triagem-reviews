@@ -111,3 +111,58 @@ class TestVocabularioTecnicoV22(unittest.TestCase):
 
     def test_misto_com_otimizacao(self):
         self.assertEqual(classify_review("A protagonista e feia e o jogo e mal otimizado", BASE)["categoria"], "Misto")
+
+
+class TestAjustesV24(unittest.TestCase):
+    def test_termo_entre_aspas_nao_conta_como_afetivo(self):
+        self.assertEqual(classify_review('Diga: "Ain que jogo Woke"', BASE)["categoria"], "Indefinido")
+        self.assertEqual(classify_review("Criticas sobre “lacração” sao vazias", BASE)["categoria"], "Indefinido")
+
+    def test_termo_afetivo_sem_aspas_continua_contando(self):
+        self.assertEqual(classify_review("Jogo woke", BASE)["categoria"], "Afetivo-visual")
+
+    def test_aspas_nao_escondem_termo_tecnico(self):
+        self.assertEqual(classify_review('As "batalhas" sao boas', BASE)["categoria"], "Tecnico")
+
+    def test_defesa_contra_quem_critica_nao_e_afetivo(self):
+        for frase in ("Nao entendi toda lacracao em volta desse jogo, jogabilidade boa",
+                      "Quem achou woke e fresco, combate divino",
+                      "Nao me importo com woke, gameplay otima",
+                      "Eu amo a lacracao, a gameplay e boa"):
+            self.assertEqual(classify_review(frase, BASE)["categoria"], "Tecnico", frase)
+
+    def test_critica_continua_sendo_afetivo(self):
+        self.assertEqual(classify_review("Esse jogo e puro woke e a gameplay e ruim", BASE)["categoria"], "Misto")
+        self.assertEqual(classify_review("Tem lacracao demais", BASE)["categoria"], "Afetivo-visual")
+
+    def test_novos_termos_tecnicos(self):
+        for frase in ("Muitos loadings", "O grind do end game e longo", "Missao chata", "Sidequests repetitivas",
+                      "Jogo lindo", "Mundo bonito", "Nao vai rodar no meu pc", "Pra jogar coop com amigo"):
+            self.assertEqual(classify_review(frase, BASE)["categoria"], "Tecnico", frase)
+
+    def test_mulher_bonita_e_aparencia(self):
+        self.assertEqual(classify_review("Mulher bonita e gostosa", BASE)["categoria"], "Afetivo-visual")
+
+    def test_versao_da_base(self):
+        self.assertEqual(BASE["versao"], "2.4")
+
+
+class TestRevisaoManualR7R8(unittest.TestCase):
+    def test_r8_um_unico_indicador_de_peso_1(self):
+        r = classify_review("A historia", BASE)
+        self.assertEqual(r["escore_tecnico"], 1)
+        self.assertEqual(r["revisao_manual"], "R8")
+
+    def test_r7_confianca_baixa(self):
+        r = classify_review("Jogo woke que trava", BASE)  # tecnico e afetivo empatam (2 x 2)
+        self.assertLess(r["confianca"], 0.6)
+        self.assertIn("R7", r["revisao_manual"])
+
+    def test_sem_indicador_nao_sinaliza(self):
+        self.assertEqual(classify_review("ok", BASE)["revisao_manual"], "")
+
+    def test_forte_nao_sinaliza(self):
+        self.assertEqual(classify_review("O jogo trava e crasha sempre", BASE)["revisao_manual"], "")
+
+    def test_categoria_nao_muda(self):
+        self.assertEqual(classify_review("A historia", BASE)["categoria"], "Tecnico")

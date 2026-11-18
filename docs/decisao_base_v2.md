@@ -47,3 +47,30 @@ Decisao da autora: elogio ou critica sobre historia e graficos e Tecnico; elogio
 - Efeito esperado e observado: Indefinido cai muito; Misto cresce (reviews ideologicos quase sempre falam de historia); Afetivo-visual puro encolhe.
 - Atencao no TCC: o nome "Tecnico" fica mais amplo que a definicao original (falha tecnica). Justificar ou renomear (ex.: "Aspectos do jogo") e confirmar com a orientadora.
 - Em 60 reviews pt-BR antes afetivos: 36 Afetivo -> 11 Afetivo + 35 Misto + 10 Tecnico + 4 Indefinido (so desenvolvimento).
+
+## v2.4: ajuste a partir do primeiro gabarito (125 reviews pt-BR)
+
+Origem: `reports/completo/avaliacao/divergencias.csv` (39 divergencias entre o gabarito manual e a v2.3). Os 3 jogos de teste (Spider-Man 2, Horizon Forbidden West, Mass Effect: Andromeda) NAO foram usados para escolher termos.
+
+Mudancas, todas genericas (nenhuma depende de um review especifico):
+- Aspas: trecho curto (ate 60 caracteres) entre aspas sai da busca do grupo afetivo ("Ain que jogo Woke", "criticas sobre 'woke'"). O grupo tecnico continua vendo o texto inteiro. Chave `aspas_neutralizam_afetivo`. Limite conhecido: quem escreve `jogo "woke"` para criticar tambem perde o termo.
+- Neutralizadores novos (so afetivo): nao entendi, nao me importo, criticas, insignificante, pipipi, amo, adoro, besteira, vazias, ain, quem achou/acha/diz/disse/chama, frescura, fresco. "critica" no singular NAO entrou (e usada por quem critica de verdade).
+- Termos tecnicos novos (peso 1, "nao vai rodar" peso 2): loading(s), tela de carregamento, grind, sidequest(s), side quest(s), missao, batalha(s), game play, repetitivo, colecionaveis, dialogos, nao vai rodar, coop/co op, cooperativo.
+- Compostos novos: tecnico "jogo/mundo/mapa/visual + lindo/bonito/feio" (janela 2); afetivo "personagem/protagonista/mulher + bonita/gostosa/linda/sexy" (janela 3, peso 2), porque o gabarito trata aparencia (inclusive elogio) como afetivo.
+
+Medicao (MESMOS 125 reviews dos quais saiu o ajuste, portanto OTIMISTA):
+- Desenvolvimento (102): acuracia 0,65 -> 0,82; precisao Tecnico 0,93 -> 0,96; revocacao Tecnico 0,64 -> 0,82; precisao Indefinido 0,45 -> 0,65; precisao Misto 0,40 -> 0,67.
+- Teste (23): inalterado (0,87), porque nenhuma mudanca tocou esses reviews. Nao prova generalizacao.
+- A medicao valida da v2.4 e nas linhas ainda nao rotuladas da amostra e em gabarito novo.
+
+Erros que sobram (21, 2 de jogos de teste), por tipo:
+- Elogio generico rotulado como Tecnico no gabarito ("obra prima", "melhor game", "jogo perfeito"): o sistema esta coerente com o protocolo; o gabarito deve ser revisado para ser consistente.
+- Defesa sem palavra-gatilho proxima ("de tao insignificante" longe do termo; "as criticas ... sao besteira" com varias palavras no meio): exige interpretacao semantica.
+- "personagens nao parecem vivos" e "game play" separado: casos isolados.
+
+Pendencias para o gabarito (decisao da autora): linha 116 (jogo perfeito, historia fantastica) esta como Indefinido mas, pela regra "historia e Tecnico", seria Tecnico; reviews de elogio generico sem aspecto devem ser Indefinido de forma consistente.
+
+## R7 e R8 (Apendice E do TCC) implementadas como sinalizadores
+
+As regras R7 (confianca menor que 0,6) e R8 (indicador de peso 1 isolado) constavam do Apendice E mas nao estavam no codigo. Agora cada review ganha a coluna `revisao_manual` ("R7", "R8", "R7;R8" ou vazio). Elas NAO mudam a categoria: so sinalizam para revisao. R7 so vale quando ha indicador; R8 vale quando o escore total e 1.
+Medicao no gabarito (125 reviews, v2.4): 27 sinalizados (22%: 22 por R8, 5 por R7). Taxa de erro do sistema: 7% nos sinalizados contra 13% nos nao sinalizados. Ou seja, as duas regras NAO concentram os erros; os erros que sobram (defesa/ironia, elogio generico) nao tem confianca baixa. Resultado a relatar no TCC como achado negativo: sinalizar por confianca/peso nao e um bom detector de erro neste sistema.

@@ -29,6 +29,14 @@ v2.1: neutralizadores (negacao/defesa perto do termo afetivo, ex.:
 "nao e woke", "sem lacracao") e "excecoes_texto" (ex.: "woke up").
 Ver docs/decisao_base_v2.md.
 
+v2.4 (R7/R8): a saida ganha "revisao_manual" ("R7", "R8", "R7;R8" ou vazio),
+que sinaliza reviews de baixa confianca ou com um unico indicador de peso 1;
+nao muda a categoria.
+
+v2.4: trechos curtos entre aspas ("Ain que jogo Woke") saem da busca do
+grupo afetivo (base: "aspas_neutralizam_afetivo"); novos termos tecnicos,
+compostos e neutralizadores. Ver docs/decisao_base_v2.md.
+
 v2.0: base de conhecimento bilingue e indicadores compostos.
   - A base pode ter uma secao opcional "en" (termos em ingles). Os dois
     idiomas sao aplicados a todo review e os escores somam. Termos em
@@ -334,16 +342,16 @@ def _score_group(text: str, knowledge_base: dict, group: str, excecoes=None) -> 
     return score, found
 
 
-def classify_review(original_text, knowledge_base: dict) -> dict:
-    """
-    Funcao principal: classifica um comentario com base na base de
-    conhecimento, retornando escore, indicadores, categoria, regra
-    e nivel de confianca.
-    """
-    normalized_text = normalize_text(original_text)
+def _remover_aspas(texto, max_caracteres: int = 60) -> str:
+    """Troca por espaco os trechos curtos entre aspas (retas, curvas ou « »)."""
+    padrao = re.compile(
+        r'["\u201c\u00ab][^"\u201c\u201d\u00ab\u00bb\n]{1,%d}["\u201d\u00bb]' % int(max_caracteres)
+    )
+    return padrao.sub(" ", str(texto))
 
-    # Expressoes que contem um termo da base mas nao tem o sentido dele
-    # (ex.: "woke up" = "acordou") saem do texto so para a busca.
+
+def _texto_de_busca(normalized_text: str, knowledge_base: dict) -> str:
+    """Tira do texto padronizado as expressoes de excecao (ex.: "woke up")."""
     search_text = normalized_text
     for frase in knowledge_base.get("excecoes_texto", []):
         search_text = re.sub(
@@ -351,17 +359,60 @@ def classify_review(original_text, knowledge_base: dict) -> dict:
             " ",
             search_text,
         )
-    search_text = re.sub(r"\s+", " ", search_text).strip()
+    return re.sub(r"\s+", " ", search_text).strip()
+
+
+CONFIANCA_MINIMA = 0.6
+
+
+def revisao_manual(technical_score: int, affective_score: int, confidence: float) -> str:
+    """
+    Regras R7 e R8 (Apendice E do TCC): sinalizam o review para revisao
+    manual, sem mudar a categoria.
+      R7: confianca menor que 0,6 (so quando ha algum indicador).
+      R8: um unico indicador de peso 1 encontrado isoladamente (escore total = 1).
+    Devolve "", "R7", "R8" ou "R7;R8".
+    """
+    total = technical_score + affective_score
+    flags = []
+    if total > 0 and confidence < CONFIANCA_MINIMA:
+        flags.append("R7")
+    if total == 1:
+        flags.append("R8")
+    return ";".join(flags)
+
+
+def classify_review(original_text, knowledge_base: dict) -> dict:
+    """
+    Funcao principal: classifica um comentario com base na base de
+    conhecimento, retornando escore, indicadores, categoria, regra
+    e nivel de confianca.
+    """
+    normalized_text = normalize_text(original_text)
+    search_text = _texto_de_busca(normalized_text, knowledge_base)
+
+    # Termo entre aspas costuma ser citacao ou ironia sobre quem critica
+    # ("Ain que jogo Woke"). Para o grupo afetivo, o trecho entre aspas
+    # curtas sai da busca; o grupo tecnico continua vendo o texto inteiro.
+    affective_text = search_text
+    if knowledge_base.get("aspas_neutralizam_afetivo"):
+        affective_text = _texto_de_busca(
+            normalize_text(
+                _remover_aspas(original_text, knowledge_base.get("aspas_max_caracteres", 60))
+            ),
+            knowledge_base,
+        )
 
     technical_score, technical_indicators = _score_group(
         search_text, knowledge_base, "tecnico"
     )
     affective_score, affective_indicators = _score_group(
-        search_text, knowledge_base, "afetivo_visual"
+        affective_text, knowledge_base, "afetivo_visual"
     )
 
     category, rule = apply_decision_rule(technical_score, affective_score)
     confidence = calculate_confidence(technical_score, affective_score)
+    review_flags = revisao_manual(technical_score, affective_score, confidence)
 
     return {
         "texto_padronizado": normalized_text,
@@ -372,4 +423,5 @@ def classify_review(original_text, knowledge_base: dict) -> dict:
         "categoria": category,
         "confianca": confidence,
         "regra_acionada": rule,
+        "revisao_manual": review_flags,
     }
