@@ -15,3 +15,7 @@ reports/completo/
 reports/completo_en/
 reports/gabarito/
 *.log
+
+reports/completo_todos/
+reports/vocabulario_dev/
+reports/vocabulario_en_dev/

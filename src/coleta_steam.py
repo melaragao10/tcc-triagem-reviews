@@ -15,6 +15,16 @@ trabalho elas precisam entrar, entao o coletor pede
 filter_offtopic_activity=false. Use --excluir-fora-do-assunto para
 reproduzir a visao filtrada da loja.
 
+Amostragem intencional: com --tipo negativas so entram reviews negativas
+(recomendado = nao). Critica de aparencia e representacao quase so
+aparece nelas. O arquivo sai como steam_<appid>_negativas.csv na MESMA
+pasta dos demais (o main.py junta tudo e remove duplicadas pelo
+id_review). Como a amostra e intencional, a proporcao entre categorias
+NAO representa a populacao de reviews: separe pela coluna "recomendado".
+
+Falhas temporarias da Steam (HTTP 500/502/503/504, conexao caida) sao
+repetidas com espera crescente antes de desistir.
+
 Gera data/steam_<appid>.csv no formato de entrada do classificador
 (id_review, jogo, nota, recomendado, texto_original) mais metadados
 uteis para a analise (data, votos de utilidade, horas jogadas).
@@ -44,7 +54,11 @@ POR_PAGINA = 100  # maximo aceito pela API
 # A API so aceita numeros nos enums: um texto como "recent" e ignorado em
 # silencio e a resposta volta na ordem padrao (Helpful, ultimos 30 dias).
 ORDENACAO = {"helpful": 0, "recent": 1, "updated": 2}
-TIPO_REVIEW_TODAS = 0     # positivas e negativas
+TIPO_REVIEW = {"todas": 0, "positivas": 1, "negativas": 2}
+TIPO_REVIEW_TODAS = TIPO_REVIEW["todas"]  # positivas e negativas
+ERROS_TEMPORARIOS = (500, 502, 503, 504)
+TENTATIVAS = 6
+ESPERA_RETRY = 5.0  # segundos; dobra a cada nova tentativa
 TIPO_COMPRA_TODAS = 1     # compras na Steam e fora dela (chaves etc.)
 COLUNAS = [
     "id_review", "jogo", "nota", "recomendado", "texto_original",
@@ -60,15 +74,18 @@ def para_timestamp(data: str, fim_do_dia: bool = False) -> int:
 
 
 def montar_parametros(cursor: str, idioma: str, filtro: str, appid: int,
-                      incluir_fora_do_assunto: bool = True, periodo: tuple = None) -> dict:
+                      incluir_fora_do_assunto: bool = True, periodo: tuple = None,
+                      tipo: str = "todas") -> dict:
     """Parametros da GetAppReviews: tudo vai dentro de input_json."""
     if filtro not in ORDENACAO:
         raise ValueError(f"Filtro desconhecido: {filtro!r}. Use um de {sorted(ORDENACAO)}.")
+    if tipo not in TIPO_REVIEW:
+        raise ValueError(f"Tipo desconhecido: {tipo!r}. Use um de {sorted(TIPO_REVIEW)}.")
     entrada = {
         "appid": appid,
         "filter": ORDENACAO[filtro],
         "languages": [idioma],
-        "review_type": TIPO_REVIEW_TODAS,
+        "review_type": TIPO_REVIEW[tipo],
         "purchase_type": TIPO_COMPRA_TODAS,
         "num_per_page": POR_PAGINA,
         "cursor": cursor,
@@ -108,9 +125,30 @@ def converter_review(bruta: dict, jogo: str) -> dict:
     }
 
 
+def pedir_com_tentativas(sessao, parametros: dict):
+    """
+    GET na API com nova tentativa em falhas temporarias (5xx, conexao
+    caida, tempo esgotado). Espera ESPERA_RETRY, 2x, 4x... entre as
+    tentativas. Depois da ultima, devolve a resposta (ou levanta o erro)
+    para o chamador tratar como antes.
+    """
+    for tentativa in range(TENTATIVAS):
+        ultima = tentativa == TENTATIVAS - 1
+        try:
+            resposta = sessao.get(URL, params=parametros, timeout=30)
+        except (requests.ConnectionError, requests.Timeout):
+            if ultima:
+                raise
+        else:
+            if resposta.status_code not in ERROS_TEMPORARIOS or ultima:
+                return resposta
+        time.sleep(ESPERA_RETRY * (2 ** tentativa))
+
+
 def coletar(appid: int, jogo: str, maximo: int, idioma: str = "brazilian",
             filtro: str = "recent", pausa: float = 1.5, sessao=None, info: dict = None,
-            incluir_fora_do_assunto: bool = True, periodo: tuple = None) -> list:
+            incluir_fora_do_assunto: bool = True, periodo: tuple = None,
+            tipo: str = "todas") -> list:
     """
     Percorre as paginas da API pelo cursor ate juntar `maximo` reviews,
     a API parar de devolver novas ou repetir o cursor. Respeita uma
@@ -124,10 +162,9 @@ def coletar(appid: int, jogo: str, maximo: int, idioma: str = "brazilian",
     linhas, vistos, cursor = [], set(), "*"
 
     while len(linhas) < maximo:
-        resposta = sessao.get(
-            URL,
-            params=montar_parametros(cursor, idioma, filtro, appid, incluir_fora_do_assunto, periodo),
-            timeout=30,
+        resposta = pedir_com_tentativas(
+            sessao,
+            montar_parametros(cursor, idioma, filtro, appid, incluir_fora_do_assunto, periodo, tipo),
         )
         if resposta.status_code == 429:
             raise RuntimeError("A Steam limitou as requisicoes (HTTP 429). Espere alguns minutos e rode de novo.")
@@ -176,7 +213,8 @@ def salvar(linhas: list, destino: Path) -> None:
 
 
 def coletar_lote(jogos: list, maximo: int, idioma: str, filtro: str, pasta: Path,
-                 pausa: float = 1.5, sessao=None, incluir_fora_do_assunto: bool = True) -> list:
+                 pausa: float = 1.5, sessao=None, incluir_fora_do_assunto: bool = True,
+                 tipo: str = "todas") -> list:
     """
     Coleta varios jogos em sequencia. Cada jogo pode ter "periodo":
     ["AAAA-MM-DD", "AAAA-MM-DD"] no JSON (ex: as semanas do lancamento).
@@ -185,12 +223,13 @@ def coletar_lote(jogos: list, maximo: int, idioma: str, filtro: str, pasta: Path
     resumo = []
     for jogo in jogos:
         appid, nome = int(jogo["appid"]), jogo["jogo"]
-        destino = pasta / f"steam_{appid}.csv"
+        sufixo = "" if tipo == "todas" else f"_{tipo}"
+        destino = pasta / f"steam_{appid}{sufixo}.csv"
         info = {}
         try:
             periodo = tuple(jogo["periodo"]) if jogo.get("periodo") else None
             linhas = coletar(appid, nome, maximo, idioma, filtro, pausa, sessao, info,
-                             incluir_fora_do_assunto, periodo)
+                             incluir_fora_do_assunto, periodo, tipo)
             salvar(linhas, destino)
             resumo.append({"appid": appid, "jogo": nome, "coletadas": len(linhas),
                            "disponiveis": info.get("total_disponivel"), "arquivo": str(destino), "erro": ""})
@@ -219,6 +258,8 @@ def main(argv=None) -> None:
     parser.add_argument("--idioma", default="brazilian", help="Idioma da Steam (padrao: brazilian = pt-BR)")
     parser.add_argument("--filtro", default="recent", choices=sorted(ORDENACAO),
                         help="Ordenacao: recent (mais novas), updated, helpful (mais uteis, sem limite de data). Padrao: recent")
+    parser.add_argument("--tipo", default="todas", choices=sorted(TIPO_REVIEW),
+                        help="todas (padrao), positivas ou negativas. Negativas = amostragem dirigida (nao serve para prevalencia)")
     parser.add_argument("--excluir-fora-do-assunto", action="store_true",
                         help="Esconde as reviews que a Steam marcou como fora do assunto (review bombing), como a loja faz")
     parser.add_argument("--periodo", nargs=2, metavar=("DE", "ATE"), default=None,
@@ -231,7 +272,8 @@ def main(argv=None) -> None:
             jogos = json.load(arquivo)["jogos"]
         pasta = args.saida or Path("data")
         resumo = coletar_lote(jogos, args.max, args.idioma, args.filtro, pasta,
-                              incluir_fora_do_assunto=not args.excluir_fora_do_assunto)
+                              incluir_fora_do_assunto=not args.excluir_fora_do_assunto,
+                              tipo=args.tipo)
         imprimir_resumo(resumo)
         if any(r["erro"] for r in resumo):
             raise SystemExit(1)
@@ -239,10 +281,12 @@ def main(argv=None) -> None:
 
     if args.appid is None or not args.jogo:
         parser.error("informe --lote, ou --appid e --jogo")
-    destino = args.saida or Path("data") / f"steam_{args.appid}.csv"
+    sufixo = "" if args.tipo == "todas" else f"_{args.tipo}"
+    destino = args.saida or Path("data") / f"steam_{args.appid}{sufixo}.csv"
     linhas = coletar(args.appid, args.jogo, args.max, args.idioma, args.filtro,
                      incluir_fora_do_assunto=not args.excluir_fora_do_assunto,
-                     periodo=tuple(args.periodo) if args.periodo else None)
+                     periodo=tuple(args.periodo) if args.periodo else None,
+                     tipo=args.tipo)
     salvar(linhas, destino)
     print(f"{len(linhas)} reviews de '{args.jogo}' salvas em {destino}")
 

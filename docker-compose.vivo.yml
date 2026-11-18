@@ -1,0 +1,12 @@
+# Painel ao vivo: serve reports/ e recarrega a pagina sozinha quando algo muda.
+# Uso: docker compose -f docker-compose.yml -f docker-compose.vivo.yml up -d painel_vivo
+services:
+  painel_vivo:
+    build: .
+    container_name: tcc-painel-vivo
+    command: ["python", "-m", "src.painel_vivo", "--pasta", "reports", "--endereco", "0.0.0.0", "--porta", "8091"]
+    volumes:
+      - ./reports:/app/reports:ro
+    ports:
+      - "127.0.0.1:8091:8091"
+    restart: unless-stopped

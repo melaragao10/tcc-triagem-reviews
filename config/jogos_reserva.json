@@ -1,5 +1,5 @@
 {
-  "_comentario": "Jogos de reserva: so entram se o volume ou a cobertura da amostra principal for insuficiente. Ver docs/selecao_jogos.md.",
+  "_comentario": "Jogos de reserva. Stellar Blade e Wolfenstein: Youngblood foram para config/jogos.json na v2. Concord tem volume muito baixo (retirado em 2024).",
   "jogos": [
     {
       "appid": 2443720,
@@ -7,20 +7,6 @@
       "personagem": "elenco de herois",
       "grupo": "reserva",
       "motivo": "personagens chamados de 'os mais feios'; volume de reviews muito baixo (jogo retirado em 2024)"
-    },
-    {
-      "appid": 3489700,
-      "jogo": "Stellar Blade",
-      "personagem": "Eve",
-      "grupo": "reserva",
-      "motivo": "debate sobre o corpo e a aparencia de Eve (polaridade oposta: sexualizacao); base atual nao cobre esse vocabulario"
-    },
-    {
-      "appid": 1056960,
-      "jogo": "Wolfenstein: Youngblood",
-      "personagem": "Jess e Soph Blazkowicz",
-      "grupo": "reserva",
-      "motivo": "criticas as protagonistas gemeas; aparencia pouco documentada, entra so como controle"
     }
   ]
 }

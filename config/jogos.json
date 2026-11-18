@@ -1,5 +1,5 @@
 {
-  "_comentario": "Jogos da amostra principal (secao 2.4 do TCC). Criterios e fontes em docs/selecao_jogos.md. grupo nucleo = controversia sobre aparencia da personagem; grupo controle = ruido tecnico ou de outra natureza, usado para testar a separacao. appid = numero na URL da loja Steam. O campo periodo (DE ATE, AAAA-MM-DD) sera preenchido apos a checagem do volume.",
+  "_comentario": "Jogos da amostra principal (secao 2.4 do TCC). Criterios e fontes em docs/selecao_jogos.md. grupo nucleo = controversia sobre aparencia/representacao da personagem; grupo controle = ruido tecnico ou de outra natureza. v2: amostragem INTENCIONAL; entram jogos polemicos adicionais e a coleta inclui reviews negativas (--tipo negativas) no mesmo conjunto. appid = numero na URL da loja Steam.",
   "jogos": [
     {
       "appid": 1151640,
@@ -63,6 +63,62 @@
       "personagem": "Harley Quinn",
       "grupo": "controle",
       "motivo": "criticas a aparencia de Harley Quinn ('feia') e rotulo de 'woke'; alto volume de reviews negativas"
+    },
+    {
+      "appid": 3489700,
+      "jogo": "Stellar Blade",
+      "personagem": "Eve",
+      "grupo": "nucleo",
+      "motivo": "debate sobre corpo e aparencia de Eve (polaridade oposta: sexualizacao); veio da reserva"
+    },
+    {
+      "appid": 1056960,
+      "jogo": "Wolfenstein: Youngblood",
+      "personagem": "Jess e Soph Blazkowicz",
+      "grupo": "nucleo",
+      "motivo": "criticas as protagonistas gemeas; veio da reserva"
+    },
+    {
+      "appid": 3159330,
+      "jogo": "Assassin's Creed Shadows",
+      "personagem": "Yasuke e Naoe",
+      "grupo": "nucleo",
+      "motivo": "forte debate sobre representacao do protagonista Yasuke e review bombing; appid conferido na loja"
+    },
+    {
+      "appid": 997070,
+      "jogo": "Marvel's Avengers",
+      "personagem": "Kamala Khan, Viuva Negra",
+      "grupo": "nucleo",
+      "motivo": "criticas ao design das personagens e a Kamala Khan; appid conferido na loja"
+    },
+    {
+      "appid": 1680880,
+      "jogo": "Forspoken",
+      "personagem": "Frey",
+      "grupo": "nucleo",
+      "motivo": "protagonista Frey alvo de criticas a aparencia, dialogos e rotulo de woke; appid conferido na loja"
+    },
+    {
+      "appid": 990080,
+      "jogo": "Hogwarts Legacy",
+      "personagem": "personagem do jogador",
+      "grupo": "nucleo",
+      "motivo": "debate ideologico (representacao e boicote); amplia vocabulario de critica ideologica; appid conferido na loja"
+    },
+    {
+      "appid": 1716740,
+      "jogo": "Starfield",
+      "personagem": "NPCs e companheiros",
+      "grupo": "nucleo",
+      "motivo": "criticas a aparencia e ao design dos rostos; debate sobre representacao; appid conferido na loja"
+    },
+    {
+      "appid": 742420,
+      "jogo": "Saints Row (2022)",
+      "personagem": "elenco principal",
+      "grupo": "nucleo",
+      "motivo": "acusacoes de 'woke' e criticas ao design dos personagens; appid conferido na loja"
     }
   ]
 }
